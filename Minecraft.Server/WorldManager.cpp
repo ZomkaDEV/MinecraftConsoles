@@ -56,6 +56,7 @@ struct SaveDataLoadContext
  * Applies the configured save destination ID (`level-id`) to `StorageManager`
  * - Re-applies the same ID at startup and before save to avoid destination drift
  * - Ignores empty values as invalid
+ * - For some reason, a date-based world file occasionally appears after a debug build, but the cause is unknown.
  * 保存先IDの適用処理
  *
  * @param saveFilename Normalized save destination ID
