@@ -183,7 +183,7 @@ int linenoiseHistoryAdd(const char *line)
         const char *last = g_history.items[g_history.len - 1];
         if (last != NULL && strcmp(last, line) == 0)
             return 1;
-    }
+        }
 
     linenoiseEnsureHistoryCapacity(g_history.len + 1);
     if (g_history.cap <= g_history.len)
@@ -220,9 +220,109 @@ static int linenoiseIsStopRequested(void)
     return InterlockedCompareExchange(&g_stopRequested, 0, 0) != 0;
 }
 
+static void linenoiseWriteHint(const char *hint, size_t hintLen)
+{
+    HANDLE stdoutHandle;
+    CONSOLE_SCREEN_BUFFER_INFO originalInfo;
+    int hasColorConsole = 0;
+
+    if (hint == NULL || hintLen == 0)
+    {
+        return;
+    }
+
+    stdoutHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (stdoutHandle != INVALID_HANDLE_VALUE && stdoutHandle != NULL)
+    {
+        if (GetConsoleScreenBufferInfo(stdoutHandle, &originalInfo))
+        {
+            hasColorConsole = 1;
+            /* Draw predictive tail in dim gray, then restore original console colors. */
+            SetConsoleTextAttribute(stdoutHandle, FOREGROUND_INTENSITY);
+        }
+    }
+
+    fwrite(hint, 1, hintLen, stdout);
+
+    if (hasColorConsole)
+    {
+        SetConsoleTextAttribute(stdoutHandle, originalInfo.wAttributes);
+    }
+}
+
+static int linenoiseStartsWithIgnoreCase(const char *full, const char *prefix)
+{
+    while (*prefix != 0)
+    {
+        if (tolower((unsigned char)*full) != tolower((unsigned char)*prefix))
+        {
+            return 0;
+        }
+        ++full;
+        ++prefix;
+    }
+    return 1;
+}
+
+static size_t linenoiseBuildHint(const char *buf, char *hint, size_t hintSize)
+{
+    linenoiseCompletions lc;
+    size_t inputLen = 0;
+    size_t i = 0;
+
+    if (hint == NULL || hintSize == 0)
+    {
+        return 0;
+    }
+    hint[0] = 0;
+
+    if (buf == NULL || buf[0] == 0 || g_completionCallback == NULL)
+    {
+        return 0;
+    }
+
+    lc.len = 0;
+    lc.cvec = NULL;
+    /* Reuse the completion callback and derive a "ghost text" suffix from the first extending match. */
+    g_completionCallback(buf, &lc);
+
+    inputLen = strlen(buf);
+    for (i = 0; i < lc.len; ++i)
+    {
+        const char *candidate = lc.cvec[i];
+        if (candidate == NULL)
+        {
+            continue;
+        }
+        if (strlen(candidate) <= inputLen)
+        {
+            continue;
+        }
+        if (!linenoiseStartsWithIgnoreCase(candidate, buf))
+        {
+            continue;
+        }
+
+        /* Keep only the part not yet typed by the user (rendered as hint text). */
+        strncpy_s(hint, hintSize, candidate + inputLen, _TRUNCATE);
+        break;
+    }
+
+    linenoiseClearCompletions(&lc);
+    return strlen(hint);
+}
+
 static void linenoiseRedrawUnsafe(const char *prompt, const char *buf, int len, int pos, int *prevLen)
 {
     int i;
+    char hint[LINENOISE_MAX_LINE] = {0};
+    int renderedLen = len;
+    /* Hint length contributes to the rendered width so stale tail characters can be cleared correctly. */
+    int hintLen = (int)linenoiseBuildHint(buf, hint, sizeof(hint));
+    if (hintLen > 0)
+    {
+        renderedLen += hintLen;
+    }
 
     fputc('\r', stdout);
     fputs(prompt, stdout);
@@ -230,22 +330,29 @@ static void linenoiseRedrawUnsafe(const char *prompt, const char *buf, int len, 
     {
         fwrite(buf, 1, (size_t)len, stdout);
     }
-
-    if (*prevLen > len)
+    if (hintLen > 0)
     {
-        for (i = len; i < *prevLen; ++i)
+        linenoiseWriteHint(hint, (size_t)hintLen);
+    }
+
+    if (*prevLen > renderedLen)
+    {
+        for (i = renderedLen; i < *prevLen; ++i)
+        {
             fputc(' ', stdout);
+        }
     }
 
     fputc('\r', stdout);
     fputs(prompt, stdout);
     if (pos > 0)
     {
+        /* Cursor positioning reflects only real user input, not the ghost hint suffix. */
         fwrite(buf, 1, (size_t)pos, stdout);
     }
 
     fflush(stdout);
-    *prevLen = len;
+    *prevLen = renderedLen;
     linenoiseUpdateEditorState(prompt, buf, len, pos, *prevLen);
 }
 
