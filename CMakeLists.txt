@@ -105,7 +105,10 @@ list(APPEND MINECRAFT_SERVER_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Console/commands/CliCommandGamemode.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Common/FileUtils.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Common/StringUtils.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/ServerLogger.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/ServerProperties.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/vendor/linenoise/linenoise.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/WorldManager.cpp"
 )
 
 add_executable(MinecraftServer ${MINECRAFT_SERVER_SOURCES})
