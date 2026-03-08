@@ -10,6 +10,26 @@ SERVER_BIND_IP="0.0.0.0"
 PERSIST_DIR="/srv/persist"
 WINE_CMD=""
 
+ensure_persist_file() {
+  local persist_path="$1"
+  local runtime_path="$2"
+  local default_text="$3"
+
+  if [ ! -f "${persist_path}" ]; then
+    if [ -f "${runtime_path}" ] && [ ! -L "${runtime_path}" ]; then
+      cp -f "${runtime_path}" "${persist_path}"
+    else
+      printf '%b' "${default_text}" > "${persist_path}"
+    fi
+  fi
+
+  if [ -e "${runtime_path}" ] && [ ! -L "${runtime_path}" ]; then
+    rm -f "${runtime_path}"
+  fi
+
+  ln -sfn "${persist_path}" "${runtime_path}"
+}
+
 if [ ! -d "$SERVER_DIR" ]; then
   echo "[error] Server directory not found: $SERVER_DIR" >&2
   exit 1
@@ -23,23 +43,20 @@ if [ ! -f "$SERVER_EXE" ]; then
   exit 1
 fi
 
+mkdir -p "${PERSIST_DIR}"
+
 # created because it is not implemented on the server side
 mkdir -p "${PERSIST_DIR}/GameHDD"
 
-if [ ! -f "${PERSIST_DIR}/server.properties" ]; then
-  if [ -f "server.properties" ] && [ ! -L "server.properties" ]; then
-    cp -f "server.properties" "${PERSIST_DIR}/server.properties"
-  else
-    : > "${PERSIST_DIR}/server.properties" # the server writes the default configuration if the file is empty, so it works
-  fi
-fi
+ensure_persist_file "${PERSIST_DIR}/server.properties" "server.properties" ""
+ensure_persist_file "${PERSIST_DIR}/banned-players.json" "banned-players.json" "[]\n"
+ensure_persist_file "${PERSIST_DIR}/banned-ips.json" "banned-ips.json" "[]\n"
 
 # differs from the structure, but it’s reorganized into a more manageable structure to the host side
 if [ -e "Windows64/GameHDD" ] && [ ! -L "Windows64/GameHDD" ]; then
   rm -rf "Windows64/GameHDD"
 fi
 ln -sfn "${PERSIST_DIR}/GameHDD" "Windows64/GameHDD"
-ln -sfn "${PERSIST_DIR}/server.properties" "server.properties"
 
 # for compatibility with other images
 if command -v wine64 >/dev/null 2>&1; then
