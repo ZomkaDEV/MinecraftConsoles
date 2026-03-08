@@ -69,7 +69,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_DEBUG;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_DEBUG;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64;MINECRAFT_SERVER_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Minecraft.Client;..\Minecraft.Client\Windows64\Iggy\include;..\Minecraft.Client\Xbox\Sentient\Include;..\Minecraft.World\x64headers;$(ProjectDir)Windows64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <MASM>
@@ -101,7 +101,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64;MINECRAFT_SERVER_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Minecraft.Client;..\Minecraft.Client\Windows64\Iggy\include;..\Minecraft.Client\Xbox\Sentient\Include;..\Minecraft.World\x64headers;$(ProjectDir)Windows64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <MASM>
@@ -124,6 +124,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Access\Access.cpp" />
+    <ClCompile Include="Access\BanManager.cpp" />
     <ClCompile Include="..\Minecraft.Client\AbstractTexturePack.cpp" />
     <ClCompile Include="..\Minecraft.Client\AchievementPopup.cpp" />
     <ClCompile Include="..\Minecraft.Client\AchievementScreen.cpp" />
@@ -674,6 +676,8 @@
     <ClCompile Include="Windows64\ServerMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Access\Access.h" />
+    <ClInclude Include="Access\BanManager.h" />
     <ClInclude Include="Console\ServerCli.h" />
     <ClInclude Include="Console\ServerCliInput.h" />
     <ClInclude Include="Console\commands\CliCommandGamemode.h" />
@@ -709,4 +713,3 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
 </Project>
-

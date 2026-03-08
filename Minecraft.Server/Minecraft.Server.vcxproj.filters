@@ -10,6 +10,9 @@
     <Filter Include="Server\Console\Commands">
       <UniqueIdentifier>{7C28D123-0DA3-4B17-84C0-E326F5A75740}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server\Access">
+      <UniqueIdentifier>{29AB58D1-E8A9-465A-B3EA-BC5E9110A7A1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Server\Common">
       <UniqueIdentifier>{BC6FD58B-1A40-45FE-B8D9-1A087C25126D}</UniqueIdentifier>
     </Filter>
@@ -47,6 +50,12 @@
     </ClCompile>
     <ClCompile Include="Windows64\ServerMain.cpp">
       <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Access\Access.cpp">
+      <Filter>Server\Access</Filter>
+    </ClCompile>
+    <ClCompile Include="Access\BanManager.cpp">
+      <Filter>Server\Access</Filter>
     </ClCompile>
     <ClCompile Include="Common\FileUtils.cpp">
       <Filter>Server\Common</Filter>
@@ -575,6 +584,12 @@
     <ClInclude Include="Console\ServerCliRegistry.h">
       <Filter>Server\Console</Filter>
     </ClInclude>
+    <ClInclude Include="Access\Access.h">
+      <Filter>Server\Access</Filter>
+    </ClInclude>
+    <ClInclude Include="Access\BanManager.h">
+      <Filter>Server\Access</Filter>
+    </ClInclude>
     <ClInclude Include="Common\FileUtils.h">
       <Filter>Server\Common</Filter>
     </ClInclude>
@@ -620,4 +635,3 @@
     <MASM Include="..\Minecraft.Client\iob_shim.asm" />
   </ItemGroup>
 </Project>
-

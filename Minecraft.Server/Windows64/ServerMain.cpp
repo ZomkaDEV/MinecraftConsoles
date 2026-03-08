@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Minecraft.h"
 #include "MinecraftServer.h"
+#include "..\Access\Access.h"
 #include "..\Common\StringUtils.h"
 #include "..\ServerLogger.h"
 #include "..\ServerProperties.h"
@@ -66,6 +67,34 @@ static volatile bool g_shutdownRequested = false;
 static const DWORD kDefaultAutosaveIntervalMs = 60 * 1000;
 static const int kServerActionPad = 0;
 
+/**
+ * Calls Access::Shutdown automatically once dedicated access control was initialized successfully
+ * アクセス制御初期化後のShutdownを自動化する
+ */
+class AccessShutdownGuard
+{
+public:
+	AccessShutdownGuard()
+		: m_active(false)
+	{
+	}
+
+	void Activate()
+	{
+		m_active = true;
+	}
+
+	~AccessShutdownGuard()
+	{
+		if (m_active)
+		{
+			ServerRuntime::Access::Shutdown();
+		}
+	}
+
+private:
+	bool m_active;
+};
 static BOOL WINAPI ConsoleCtrlHandlerProc(DWORD ctrlType)
 {
 	switch (ctrlType)
@@ -324,6 +353,7 @@ int main(int argc, char **argv)
 
 	SetServerLogLevel(config.logLevel);
 	LogStartupStep("initializing process state");
+	AccessShutdownGuard accessShutdownGuard;
 
 	g_iScreenWidth = 1280;
 	g_iScreenHeight = 720;
@@ -339,6 +369,13 @@ int main(int argc, char **argv)
 	g_Win64DedicatedServerPort = config.port;
 	strncpy_s(g_Win64DedicatedServerBindIP, sizeof(g_Win64DedicatedServerBindIP), config.bindIP, _TRUNCATE);
 	g_Win64DedicatedServerLanAdvertise = serverProperties.lanAdvertise;
+	LogStartupStep("initializing dedicated access control");
+	if (!ServerRuntime::Access::Initialize("."))
+	{
+		LogError("startup", "Failed to initialize dedicated server access control.");
+		return 2;
+	}
+	accessShutdownGuard.Activate();
 	LogInfof("startup", "LAN advertise: %s", serverProperties.lanAdvertise ? "enabled" : "disabled");
 
 	LogStartupStep("registering hidden window class");
@@ -349,6 +386,7 @@ int main(int argc, char **argv)
 	if (!InitInstance(hInstance, SW_HIDE))
 	{
 		LogError("startup", "Failed to create window instance.");
+		
 		return 2;
 	}
 	ShowWindow(g_hWnd, SW_HIDE);
@@ -358,6 +396,7 @@ int main(int argc, char **argv)
 	{
 		LogError("startup", "Failed to initialize D3D device.");
 		CleanupDevice();
+		
 		return 2;
 	}
 
@@ -414,6 +453,7 @@ int main(int argc, char **argv)
 	{
 		LogError("startup", "Minecraft initialization failed.");
 		CleanupDevice();
+		
 		return 3;
 	}
 
@@ -479,6 +519,7 @@ int main(int argc, char **argv)
 		WinsockNetLayer::Shutdown();
 		g_NetworkManager.Terminate();
 		CleanupDevice();
+		
 		return 4;
 	}
 
@@ -514,6 +555,7 @@ int main(int argc, char **argv)
 		WinsockNetLayer::Shutdown();
 		g_NetworkManager.Terminate();
 		CleanupDevice();
+		
 		return 4;
 	}
 
@@ -612,6 +654,7 @@ int main(int argc, char **argv)
 	WinsockNetLayer::Shutdown();
 	g_NetworkManager.Terminate();
 	CleanupDevice();
+	
 
 	return 0;
 }

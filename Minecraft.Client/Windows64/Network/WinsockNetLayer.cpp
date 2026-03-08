@@ -8,11 +8,19 @@
 #include "WinsockNetLayer.h"
 #include "..\..\Common\Network\PlatformNetworkManagerStub.h"
 #include "..\..\..\Minecraft.World\Socket.h"
+
+#if defined(MINECRAFT_SERVER_BUILD)
+#include "..\..\..\Minecraft.Server\Access\Access.h"
+#endif
 #include "..\..\..\Minecraft.World\DisconnectPacket.h"
 #include "..\..\Minecraft.h"
 #include "..\4JLibs\inc\4J_Profile.h"
 
 static bool RecvExact(SOCKET sock, BYTE* buf, int len);
+
+#if defined(MINECRAFT_SERVER_BUILD)
+static bool TryGetNumericRemoteIp(const sockaddr_in &remoteAddress, std::string *outIp);
+#endif
 
 SOCKET WinsockNetLayer::s_listenSocket = INVALID_SOCKET;
 SOCKET WinsockNetLayer::s_hostConnectionSocket = INVALID_SOCKET;
@@ -475,6 +483,27 @@ static bool RecvExact(SOCKET sock, BYTE* buf, int len)
 	return true;
 }
 
+#if defined(MINECRAFT_SERVER_BUILD)
+static bool TryGetNumericRemoteIp(const sockaddr_in &remoteAddress, std::string *outIp)
+{
+	if (outIp == NULL)
+	{
+		return false;
+	}
+
+	outIp->clear();
+	char ipBuffer[64] = {};
+	const char *ip = inet_ntop(AF_INET, (void *)&remoteAddress.sin_addr, ipBuffer, sizeof(ipBuffer));
+	if (ip == NULL || ip[0] == 0)
+	{
+		return false;
+	}
+
+	*outIp = ip;
+	return true;
+}
+#endif
+
 void WinsockNetLayer::HandleDataReceived(BYTE fromSmallId, BYTE toSmallId, unsigned char* data, unsigned int dataSize)
 {
 	INetworkPlayer* pPlayerFrom = g_NetworkManager.GetPlayerBySmallId(fromSmallId);
@@ -500,7 +529,10 @@ DWORD WINAPI WinsockNetLayer::AcceptThreadProc(LPVOID param)
 {
 	while (s_active)
 	{
-		SOCKET clientSocket = accept(s_listenSocket, NULL, NULL);
+		sockaddr_in remoteAddress;
+		ZeroMemory(&remoteAddress, sizeof(remoteAddress));
+		int remoteAddressLength = sizeof(remoteAddress);
+		SOCKET clientSocket = accept(s_listenSocket, (sockaddr*)&remoteAddress, &remoteAddressLength);
 		if (clientSocket == INVALID_SOCKET)
 		{
 			if (s_active)
@@ -510,6 +542,20 @@ DWORD WINAPI WinsockNetLayer::AcceptThreadProc(LPVOID param)
 
 		int noDelay = 1;
 		setsockopt(clientSocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&noDelay, sizeof(noDelay));
+
+#if defined(MINECRAFT_SERVER_BUILD)
+		if (g_Win64DedicatedServer)
+		{
+			std::string remoteIp;
+			if (TryGetNumericRemoteIp(remoteAddress, &remoteIp) && ServerRuntime::Access::IsIpBanned(remoteIp))
+			{
+				app.DebugPrintf("Win64 LAN: Rejecting banned ip %s\n", remoteIp.c_str());
+				SendRejectWithReason(clientSocket, DisconnectPacket::eDisconnect_Banned);
+				closesocket(clientSocket);
+				continue;
+			}
+		}
+#endif
 
 		extern QNET_STATE _iQNetStubState;
 		if (_iQNetStubState != QNET_STATE_GAME_PLAY)

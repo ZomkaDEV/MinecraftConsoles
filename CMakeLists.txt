@@ -91,6 +91,8 @@ target_link_libraries(MinecraftClient PRIVATE
 set(MINECRAFT_SERVER_SOURCES ${MINECRAFT_CLIENT_SOURCES})
 list(APPEND MINECRAFT_SERVER_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Windows64/ServerMain.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Access/Access.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Access/BanManager.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Console/ServerCli.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Console/ServerCliInput.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Console/ServerCliParser.cpp"
@@ -115,8 +117,8 @@ target_include_directories(MinecraftServer PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Windows64"
 )
 target_compile_definitions(MinecraftServer PRIVATE
-  $<$<CONFIG:Debug>:_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_DEBUG;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64>
-  $<$<NOT:$<CONFIG:Debug>>:_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64>
+  $<$<CONFIG:Debug>:_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_DEBUG;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64;MINECRAFT_SERVER_BUILD>
+  $<$<NOT:$<CONFIG:Debug>>:_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64;MINECRAFT_SERVER_BUILD>
 )
 if(MSVC)
   configure_msvc_target(MinecraftServer)
@@ -217,4 +219,3 @@ add_custom_command(TARGET MinecraftServer POST_BUILD
 )
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT MinecraftServer)
-
