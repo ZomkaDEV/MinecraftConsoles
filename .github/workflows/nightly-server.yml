@@ -1,0 +1,43 @@
+name: Nightly Release (Server)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+    paths-ignore:
+      - ".gitignore"
+      - "*.md"
+      - ".github/*.md"
+
+jobs:
+  build:
+    name: Build Windows64
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup msbuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build
+        run: MSBuild.exe MinecraftConsoles.sln /t:Minecraft_Server /p:Configuration=Release /p:Platform="Windows64"
+
+      - name: Zip Build
+        run: 7z a -r LCEWindows64.zip ./x64/Release/*
+
+      - name: Update release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: nightly-server
+          name: Nightly Release (Server)
+          body: |
+            ZERO SUPPORT IS PROVIDED FOR THIS! THIS IS A PERSONAL FORK!
+          files: |
+            LCEWindows64.zip
+            ./x64/Release/Minecraft.Server.exe
+            ./x64/Release/Minecraft.Server.pdb
