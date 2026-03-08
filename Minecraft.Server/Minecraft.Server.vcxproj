@@ -652,9 +652,14 @@
     </ClCompile>
     <ClCompile Include="Console\ServerCli.cpp" />
     <ClCompile Include="Console\ServerCliInput.cpp" />
+    <ClCompile Include="Console\commands\CliCommandBan.cpp" />
+    <ClCompile Include="Console\commands\CliCommandBanIp.cpp" />
+    <ClCompile Include="Console\commands\CliCommandBanList.cpp" />
     <ClCompile Include="Console\commands\CliCommandGamemode.cpp" />
     <ClCompile Include="Console\commands\CliCommandHelp.cpp" />
     <ClCompile Include="Console\commands\CliCommandList.cpp" />
+    <ClCompile Include="Console\commands\CliCommandPardon.cpp" />
+    <ClCompile Include="Console\commands\CliCommandPardonIp.cpp" />
     <ClCompile Include="Console\commands\CliCommandStop.cpp" />
     <ClCompile Include="Console\commands\CliCommandTp.cpp" />
     <ClCompile Include="Console\ServerCliEngine.cpp" />
@@ -681,9 +686,14 @@
     <ClInclude Include="Access\BanManager.h" />
     <ClInclude Include="Console\ServerCli.h" />
     <ClInclude Include="Console\ServerCliInput.h" />
+    <ClInclude Include="Console\commands\CliCommandBan.h" />
+    <ClInclude Include="Console\commands\CliCommandBanIp.h" />
+    <ClInclude Include="Console\commands\CliCommandBanList.h" />
     <ClInclude Include="Console\commands\CliCommandGamemode.h" />
     <ClInclude Include="Console\commands\CliCommandHelp.h" />
     <ClInclude Include="Console\commands\CliCommandList.h" />
+    <ClInclude Include="Console\commands\CliCommandPardon.h" />
+    <ClInclude Include="Console\commands\CliCommandPardonIp.h" />
     <ClInclude Include="Console\commands\CliCommandStop.h" />
     <ClInclude Include="Console\commands\CliCommandTp.h" />
     <ClInclude Include="Console\commands\IServerCliCommand.h" />

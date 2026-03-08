@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 
 #include "ServerLogManager.h"
 
@@ -365,6 +365,30 @@ namespace ServerRuntime
 				remoteIp.c_str(),
 				(unsigned)smallId,
 				DisconnectReasonToString(reason));
+		}
+
+		/** 
+		 * For logging purposes, the responsibility is technically misplaced, but the IP is cached in `LogManager`.
+		 * Those cached values are then used to retrieve the player's IP.
+		 * 
+		 * Eventually, this should be implemented in a separate class or on the `Minecraft.Client` side instead.
+		 */
+		bool TryGetConnectionRemoteIp(unsigned char smallId, std::string *outIp)
+		{
+			if (!IsDedicatedServerLoggingEnabled() || outIp == NULL)
+			{
+				return false;
+			}
+
+			std::lock_guard<std::mutex> stateLock(g_serverLogState.stateLock);
+			const ConnectionLogEntry &entry = g_serverLogState.entries[smallId];
+			if (entry.remoteIp.empty() || entry.remoteIp == "unknown")
+			{
+				return false;
+			}
+
+			*outIp = entry.remoteIp;
+			return true;
 		}
 
 		// Provide explicit cache cleanup for paths that terminate without going through disconnect logging.

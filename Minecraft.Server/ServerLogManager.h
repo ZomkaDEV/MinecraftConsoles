@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 #include <stdarg.h>
@@ -108,6 +108,14 @@ namespace ServerRuntime
             const std::wstring &playerName,
             DisconnectPacket::eDisconnectReason reason,
             bool initiatedByServer);
+
+        /**
+         * Reads the cached remote IP for a live smallId without consuming the entry
+         * Eventually, this should be implemented in a separate class or on the `Minecraft.Client` side instead.
+         * 
+         * 指定smallIdの接続IPをキャッシュから参照する
+         */
+        bool TryGetConnectionRemoteIp(unsigned char smallId, std::string *outIp);
 
         /**
          * Removes any remembered IP or player name for the specified smallId

@@ -5,9 +5,14 @@
 #include "ServerCliParser.h"
 #include "ServerCliRegistry.h"
 #include "commands\IServerCliCommand.h"
+#include "commands\CliCommandBan.h"
+#include "commands\CliCommandBanIp.h"
+#include "commands\CliCommandBanList.h"
 #include "commands\CliCommandGamemode.h"
 #include "commands\CliCommandHelp.h"
 #include "commands\CliCommandList.h"
+#include "commands\CliCommandPardon.h"
+#include "commands\CliCommandPardonIp.h"
 #include "commands\CliCommandStop.h"
 #include "commands\CliCommandTp.h"
 #include "..\Common\StringUtils.h"
@@ -38,6 +43,11 @@ namespace ServerRuntime
 		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandHelp()));
 		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandStop()));
 		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandList()));
+		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandBan()));
+		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandBanIp()));
+		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandPardon()));
+		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandPardonIp()));
+		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandBanList()));
 		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandTp()));
 		m_registry->Register(std::unique_ptr<IServerCliCommand>(new CliCommandGamemode()));
 	}
