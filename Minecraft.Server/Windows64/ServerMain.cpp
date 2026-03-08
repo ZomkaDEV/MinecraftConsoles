@@ -153,6 +153,7 @@ using ServerRuntime::LoadServerPropertiesConfig;
 using ServerRuntime::LogError;
 using ServerRuntime::LogErrorf;
 using ServerRuntime::LogInfof;
+using ServerRuntime::LogDebugf;
 using ServerRuntime::LogStartupStep;
 using ServerRuntime::LogWarn;
 using ServerRuntime::LogWorldIO;
@@ -606,6 +607,11 @@ int main(int argc, char **argv)
 		HandleXuiActions();
 		serverCli.Poll();
 
+		if (g_shutdownRequested || app.m_bShutdown)
+		{
+			break;
+		}
+
 		if (autosaveRequested && app.GetXuiServerAction(kServerActionPad) == eXuiServerAction_Idle)
 		{
 			LogWorldIO("autosave completed");
@@ -633,25 +639,16 @@ int main(int argc, char **argv)
 	}
 	serverCli.Stop();
 
-	LogStartupStep("stopping dedicated server");
+	LogInfof("shutdown", "Dedicated server stopped");
 	MinecraftServer *server = MinecraftServer::getInstance();
 	if (server != NULL)
 	{
 		server->setSaveOnExit(true);
 	}
-
-	LogWorldIO("requesting save before shutdown");
-	// Return to Idle before shutdown save to avoid action conflicts
-	WaitForWorldActionIdle(kServerActionPad, 5000, &TickCoreSystems, &HandleXuiActions);
-	app.SetXuiServerAction(kServerActionPad, eXuiServerAction_SaveGame);
-	if (!WaitForWorldActionIdle(kServerActionPad, 15000, &TickCoreSystems, &HandleXuiActions))
+	if (server != NULL)
 	{
-		LogWorldIO("shutdown save timed out");
-		LogWarn("world-io", "Timed out waiting for shutdown save action to finish.");
-	}
-	else
-	{
-		LogWorldIO("shutdown save completed");
+		LogWorldIO("requesting save before shutdown");
+		LogWorldIO("using saveOnExit for shutdown");
 	}
 
 	MinecraftServer::HaltServer();
@@ -663,8 +660,11 @@ int main(int argc, char **argv)
 		waitThread.WaitForCompletion(INFINITE);
 	}
 
+	LogInfof("shutdown", "Cleaning up and exiting.");
 	WinsockNetLayer::Shutdown();
+	LogDebugf("shutdown", "Network layer shutdown complete.");
 	g_NetworkManager.Terminate();
+	LogDebugf("shutdown", "Network manager terminated.");
 	ServerRuntime::ServerLogManager::Shutdown();
 	CleanupDevice();
 	
