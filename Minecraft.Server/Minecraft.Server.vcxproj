@@ -70,7 +70,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_DEBUG;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64;MINECRAFT_SERVER_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Minecraft.Client;..\Minecraft.Client\Windows64\Iggy\include;..\Minecraft.Client\Xbox\Sentient\Include;..\Minecraft.World\x64headers;$(ProjectDir)Windows64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Minecraft.Client;..\Minecraft.Client\Windows64\Iggy\include;..\Minecraft.Client\Xbox\Sentient\Include;..\Minecraft.World\x64headers;..\include;$(ProjectDir)Windows64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <MASM>
       <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
@@ -102,7 +102,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_LARGE_WORLDS;_DEBUG_MENUS_ENABLED;_CRT_NON_CONFORMING_SWPRINTFS;_CRT_SECURE_NO_WARNINGS;_WINDOWS64;MINECRAFT_SERVER_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Minecraft.Client;..\Minecraft.Client\Windows64\Iggy\include;..\Minecraft.Client\Xbox\Sentient\Include;..\Minecraft.World\x64headers;$(ProjectDir)Windows64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Minecraft.Client;..\Minecraft.Client\Windows64\Iggy\include;..\Minecraft.Client\Xbox\Sentient\Include;..\Minecraft.World\x64headers;..\include;$(ProjectDir)Windows64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <MASM>
       <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
@@ -176,7 +176,7 @@
     <ClCompile Include="..\Minecraft.Client\Common\DLC\DLCSkinFile.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\DLC\DLCTextureFile.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\DLC\DLCUIDataFile.cpp" />
-    <ClCompile Include="..\Minecraft.Client\Common\Filesystem\Filesystem.cpp" />
+    <ClCompile Include="..\include\lce_filesystem\lce_filesystem.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\GameRules\AddEnchantmentRuleDefinition.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\GameRules\AddItemRuleDefinition.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\GameRules\ApplySchematicRuleDefinition.cpp" />

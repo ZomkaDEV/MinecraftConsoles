@@ -122,6 +122,7 @@ target_include_directories(MinecraftServer PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Client/Windows64/Iggy/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Client/Xbox/Sentient/Include"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.World/x64headers"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/"
   "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Server/Windows64"
 )
 target_compile_definitions(MinecraftServer PRIVATE

@@ -112,7 +112,7 @@
     <ClCompile Include="..\Minecraft.Client\Common\DLC\DLCSkinFile.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\DLC\DLCTextureFile.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\DLC\DLCUIDataFile.cpp" />
-    <ClCompile Include="..\Minecraft.Client\Common\Filesystem\Filesystem.cpp" />
+    <ClCompile Include="..\include\lce_filesystem\lce_filesystem.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\GameRules\AddEnchantmentRuleDefinition.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\GameRules\AddItemRuleDefinition.cpp" />
     <ClCompile Include="..\Minecraft.Client\Common\GameRules\ApplySchematicRuleDefinition.cpp" />
