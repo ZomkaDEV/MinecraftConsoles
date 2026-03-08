@@ -78,6 +78,90 @@ static void LogSaveFilename(const char *prefix, const std::string &saveFilename)
 	LogInfof("world-io", "%s: %s", (prefix != NULL) ? prefix : "save-filename", saveFilename.c_str());
 }
 
+/**
+ * Verifies a directory exists and creates it when missing
+ * - Treats an existing non-directory path as failure
+ * - Returns whether the directory had to be created
+ * ディレクトリ存在保証の補助処理
+ */
+static bool EnsureDirectoryExists(const std::wstring &directoryPath, bool *outCreated)
+{
+	if (outCreated != NULL)
+	{
+		*outCreated = false;
+	}
+	if (directoryPath.empty())
+	{
+		return false;
+	}
+
+	DWORD attrs = GetFileAttributesW(directoryPath.c_str());
+	if (attrs != INVALID_FILE_ATTRIBUTES)
+	{
+		if ((attrs & FILE_ATTRIBUTE_DIRECTORY) != 0)
+		{
+			return true;
+		}
+
+		LogErrorf("world-io", "path exists but is not a directory: %s", WideToUtf8(directoryPath).c_str());
+		return false;
+	}
+
+	if (CreateDirectoryW(directoryPath.c_str(), NULL))
+	{
+		if (outCreated != NULL)
+		{
+			*outCreated = true;
+		}
+		return true;
+	}
+
+	DWORD error = GetLastError();
+	if (error == ERROR_ALREADY_EXISTS)
+	{
+		attrs = GetFileAttributesW(directoryPath.c_str());
+		if (attrs != INVALID_FILE_ATTRIBUTES && ((attrs & FILE_ATTRIBUTE_DIRECTORY) != 0))
+		{
+			return true;
+		}
+	}
+
+	LogErrorf(
+		"world-io",
+		"failed to create directory %s (error=%lu)",
+		WideToUtf8(directoryPath).c_str(),
+		(unsigned long)error);
+	return false;
+}
+
+/**
+ * Prepares the save root used by the Windows64 storage layout
+ * - Creates `Windows64` first because `CreateDirectoryW` is not recursive
+ * - Creates `Windows64\\GameHDD` when missing before world bootstrap starts
+ * Windows64用保存先ディレクトリの存在保証
+ */
+static bool EnsureGameHddRootExists()
+{
+	bool windows64Created = false;
+	if (!EnsureDirectoryExists(L"Windows64", &windows64Created))
+	{
+		return false;
+	}
+
+	bool gameHddCreated = false;
+	if (!EnsureDirectoryExists(L"Windows64\\GameHDD", &gameHddCreated))
+	{
+		return false;
+	}
+
+	if (windows64Created || gameHddCreated)
+	{
+		LogWorldIO("created missing Windows64\\GameHDD storage directories");
+	}
+
+	return true;
+}
+
 static void LogEnumeratedSaveInfo(int index, const SAVE_INFO &saveInfo)
 {
 	std::wstring title = Utf8ToWide(saveInfo.UTF8SaveTitle);
@@ -465,6 +549,11 @@ WorldBootstrapResult BootstrapWorldForServer(
 	WorldManagerTickProc tickProc)
 {
 	WorldBootstrapResult result;
+	if (!EnsureGameHddRootExists())
+	{
+		LogWorldIO("failed to prepare Windows64\\GameHDD storage root");
+		return result;
+	}
 
 	std::wstring targetWorldName = config.worldName;
 	std::string targetSaveFilename = config.worldSaveId;
