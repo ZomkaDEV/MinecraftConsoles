@@ -26,7 +26,7 @@ jobs:
         run: MSBuild.exe MinecraftConsoles.sln /t:Minecraft_Server /p:Configuration=Release /p:Platform="Windows64"
 
       - name: Zip Build
-        run: 7z a -r LCEWindows64.zip ./x64/Release/*
+        run: 7z a -r LCEWindows64.zip ./x64/Minecraft.Server/Release/*
 
       - name: Update release
         uses: andelf/nightly-release@main
