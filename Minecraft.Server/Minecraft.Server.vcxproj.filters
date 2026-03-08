@@ -48,6 +48,9 @@
     <ClCompile Include="Windows64\ServerMain.cpp">
       <Filter>Server</Filter>
     </ClCompile>
+    <ClCompile Include="Common\FileUtils.cpp">
+      <Filter>Server\Common</Filter>
+    </ClCompile>
     <ClCompile Include="..\Minecraft.Client\AbstractTexturePack.cpp" />
     <ClCompile Include="..\Minecraft.Client\AchievementPopup.cpp" />
     <ClCompile Include="..\Minecraft.Client\AchievementScreen.cpp" />
@@ -571,6 +574,9 @@
     </ClInclude>
     <ClInclude Include="Console\ServerCliRegistry.h">
       <Filter>Server\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\FileUtils.h">
+      <Filter>Server\Common</Filter>
     </ClInclude>
     <ClInclude Include="Common\StringUtils.h">
       <Filter>Server\Common</Filter>

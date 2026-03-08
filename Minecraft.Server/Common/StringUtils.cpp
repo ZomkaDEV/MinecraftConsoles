@@ -37,6 +37,7 @@ namespace ServerRuntime
 			int wideCount = MultiByteToWideChar(CP_UTF8, 0, value, -1, NULL, 0);
 			if (wideCount <= 0)
 			{
+				// Fall back to the current ANSI code page so legacy non-UTF-8 inputs remain readable.
 				wideCount = MultiByteToWideChar(CP_ACP, 0, value, -1, NULL, 0);
 				if (wideCount <= 0)
 				{
@@ -58,6 +59,19 @@ namespace ServerRuntime
 		std::wstring Utf8ToWide(const std::string &value)
 		{
 			return Utf8ToWide(value.c_str());
+		}
+
+		std::string StripUtf8Bom(const std::string &value)
+		{
+			if (value.size() >= 3 &&
+				(unsigned char)value[0] == 0xEF &&
+				(unsigned char)value[1] == 0xBB &&
+				(unsigned char)value[2] == 0xBF)
+			{
+				return value.substr(3);
+			}
+
+			return value;
 		}
 
 		std::string TrimAscii(const std::string &value)

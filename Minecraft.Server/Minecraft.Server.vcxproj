@@ -657,6 +657,7 @@
     <ClCompile Include="Console\ServerCliEngine.cpp" />
     <ClCompile Include="Console\ServerCliParser.cpp" />
     <ClCompile Include="Console\ServerCliRegistry.cpp" />
+    <ClCompile Include="Common\FileUtils.cpp" />
     <ClCompile Include="Common\StringUtils.cpp" />
     <ClCompile Include="..\Minecraft.Client\glWrapper.cpp" />
     <ClCompile Include="ServerLogger.cpp" />
@@ -684,6 +685,7 @@
     <ClInclude Include="Console\ServerCliEngine.h" />
     <ClInclude Include="Console\ServerCliParser.h" />
     <ClInclude Include="Console\ServerCliRegistry.h" />
+    <ClInclude Include="Common\FileUtils.h" />
     <ClInclude Include="Common\StringUtils.h" />
     <ClInclude Include="ServerLogger.h" />
     <ClInclude Include="ServerProperties.h" />
