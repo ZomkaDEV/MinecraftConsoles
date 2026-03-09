@@ -17,7 +17,7 @@ UIScene_DebugSetCamera::UIScene_DebugSetCamera(int iPad, void *initData, UILayer
 	currentPosition->player = playerNo;
 
 	Minecraft *pMinecraft = Minecraft::GetInstance();
-	if (pMinecraft != NULL)
+	if (pMinecraft != nullptr)
 	{
 		Vec3 *vec = pMinecraft->localplayers[playerNo]->getPos(1.0);
 
@@ -143,7 +143,7 @@ void UIScene_DebugSetCamera::handlePress(F64 controlId, F64 childId)
 #ifdef _WINDOWS64
 	if (isDirectEditBlocking()) return;
 #endif
-	switch((int)controlId)
+	switch(static_cast<int>(controlId))
 	{
 	case eControl_Teleport:
 		app.SetXuiServerAction(	ProfileManager.GetPrimaryPad(),
@@ -155,7 +155,7 @@ void UIScene_DebugSetCamera::handlePress(F64 controlId, F64 childId)
 	case eControl_CamZ:
 	case eControl_YRot:
 	case eControl_Elevation:
-		m_keyboardCallbackControl = (eControls)((int)controlId);
+		m_keyboardCallbackControl = static_cast<eControls>(static_cast<int>(controlId));
 #ifdef _WINDOWS64
 		if (g_KBMInput.IsKBMActive())
 		{
@@ -181,7 +181,7 @@ void UIScene_DebugSetCamera::handlePress(F64 controlId, F64 childId)
 
 void UIScene_DebugSetCamera::handleCheckboxToggled(F64 controlId, bool selected)
 {
-	switch((int)controlId)
+	switch(static_cast<int>(controlId))
 	{
 	case eControl_LockPlayer:
 		app.SetFreezePlayers(selected);
@@ -191,7 +191,7 @@ void UIScene_DebugSetCamera::handleCheckboxToggled(F64 controlId, bool selected)
 
 int UIScene_DebugSetCamera::KeyboardCompleteCallback(LPVOID lpParam,bool bRes)
 {
-	UIScene_DebugSetCamera *pClass=(UIScene_DebugSetCamera *)lpParam;
+	UIScene_DebugSetCamera *pClass=static_cast<UIScene_DebugSetCamera *>(lpParam);
 	uint16_t pchText[2048];
 	ZeroMemory(pchText, 2048 * sizeof(uint16_t));
 #ifdef _WINDOWS64
@@ -202,7 +202,7 @@ int UIScene_DebugSetCamera::KeyboardCompleteCallback(LPVOID lpParam,bool bRes)
 
 	if(pchText[0]!=0)
 	{
-		wstring value = (wchar_t *)pchText;
+		wstring value = reinterpret_cast<wchar_t*>(pchText);
 		double val = 0; 
 		if(!value.empty()) val = _fromString<double>( value );
 		switch(pClass->m_keyboardCallbackControl)
