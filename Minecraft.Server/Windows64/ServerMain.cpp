@@ -423,7 +423,6 @@ int main(int argc, char **argv)
 	app.loadMediaArchive();
 	RenderManager.Initialise(g_pd3dDevice, g_pSwapChain);
 	app.loadStringTable();
-	ui.init(g_pd3dDevice, g_pImmediateContext, g_pRenderTargetView, g_pDepthStencilView, g_iScreenWidth, g_iScreenHeight);
 
 	InputManager.Initialise(1, 3, MINECRAFT_ACTION_MAX, ACTION_MAX_MENU);
 	g_KBMInput.Init();
@@ -678,4 +677,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
